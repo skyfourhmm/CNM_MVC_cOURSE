@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Courses</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+  <form action="/save" method="post" class="container mt-5">
+    <h1 class="text-center mb-4">Nhập vào môn học mới</h1>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">ID</label>
+      <input name="id" type="text" class="form-control" id="exampleFormControlInput1" placeholder="123">
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Tên môn học</label>
+      <input name="name" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Loại môn học</label>
+      <input name="course_type" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Loại học kỳ</label>
+      <input name="semester"  type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Khoa</label>
+      <input name="department" type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm</button>
+  </form>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Danh Sách Các Khóa Học</h1>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">STT</th>
+          <th scope="col">TÊN MÔN HỌC</th>
+          <th scope="col">LOẠI MÔN HỌC</th>
+          <th scope="col">LOẠI HỌC KỲ</th>
+          <th scope="col">KHOA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% Courses.forEach((item, index) => { %>
+          <tr>
+            <th scope="row"><%= item.id %></th> <!-- Hiển thị số thứ tự -->
+            <td><%= item.name %></td>
+            <td><%= item.course_type %></td>
+            <td><%= item.semester %></td>
+            <td><%= item.department %></td>
+            <td>
+              <form action="/delete/<%= item.id %>" method="POST">
+                <input type="hidden">
+                <button type="submit" class="btn btn-danger">Xóa</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js (Optional, for interactive components) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

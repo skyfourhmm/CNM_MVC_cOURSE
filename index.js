@@ -1,8 +1,10 @@
 const express = require("express")
+const multer = require("multer")
 const PORT = 3000
 let Courses = require('./data')
+let docClient = require("./configs/aws.configs")
 
-const app  = express();
+const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./views'))
@@ -10,33 +12,62 @@ app.use(express.static('./views'))
 app.set("view engine", "ejs")
 app.set("views", "./views")
 
+const tableName = "Subject"
+const upload = multer()
+
 app.get("/", (req, res) => {
-    return res.render("index", {Courses})
+
+    const params = {
+        TableName: tableName,
+    }
+
+    docClient.scan(params, (err, data) => {
+        if (err) {
+            console.log(err)
+            res.send("internal server error")
+        } else {
+            return res.render("index", { Courses: data.Items });
+        }
+    })
 })
 
 app.post("/save", (req, res) => {
 
     const params = {
-        id: req.body.id,
-        name: req.body.name,
-        course_type: req.body.course_type,
-        semester: req.body.semester,
-        department: req.body.department
-    }
+        TableName: tableName,
+        Item: {
+            id: Number(req.body.id),
+            name: req.body.name,
+            course_type: req.body.course_type,
+            semester: req.body.semester,
+            department: req.body.department
+        }
+    };
 
-    Courses.push(params)
+    docClient.put(params, (err, data) => {
+        if (err) {
+            console.error("Error saving item:", err);
+            return res.status(500).send("Internal");
+        }
+        res.redirect("/");
+    });
+});
 
-    return res.redirect("/")
-})
 
-app.post("/delete/:id", (req,res) => {
-    const id = parseInt(req.params.id);
+app.post("/delete/:id", (req, res) => {
 
-    if(id) {
-        Courses = Courses.filter(course => course.id !== id);
-    }
+    const params = {
+        TableName: tableName,
+        Key: { id: Number(req.params.id) }
+    };
 
-    return res.redirect("/");
+    docClient.delete(params, (err, data) => {
+        if (err) {
+            console.error("Error deleting item:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+        return res.redirect("/");
+    });
 })
 
 
